@@ -1,3 +1,8 @@
+---
+layout: post
+title: "HTB Reversing Callenge - Encryption Bot"
+---
+
 The challenge files for "Encryption Bot" include a binary named "chal" and "flag.enc" which contains a string that seems to be an encrypted flag "9W8TLp4k7t0vJW7n3VvMCpWq9WzT3C8pZ9Wz". Initial analysis of **chal** shows it is a stripped 64-bit ELF executable. Running strings for low hanging fruit did not show much info other than a bogus flag and "rm data.dat", which could indicate i/o actions taking place within the binary. 
 
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_272.png" alt="">
