@@ -13,12 +13,15 @@ Continuing looking for some more basic info about the binary, ltrace and strace 
 
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_273.png" alt="">
 
+
 Before loading the binary into a disassembler I find it helpful to take note of what I've learned about the file that may help narrow down what I'm looking for once I'm in there, so far we know the following:
 1. Binary is stripped 64-bit ELF
 2. prompts user for string to encrypt
 3. content in "flag.enc" is likely the encrypted output of real flag
 4. flag must be a specific length
 5. a file/stream with "data.dat" may be involved in the encryption process
+
+----
 
 Note: I am only a few months into RE and have solely used Ghidra, honestly only chose Ghidra bc it's free, and based on youtube videos seemed way more intuitive to me than IDA. I am nowhere close to being a Ghidra expert, or even an experienced Ghidra user, so if I explain something wrong or miss something, my b - just using it how I know how off my limited experience and it has worked for me so far lol,  tips or criticisms on twitter are welcome if ya feel the need to do so.  
 
@@ -30,12 +33,15 @@ Entry point:
 
 
 main / FUN_0010163e()
+
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_275.png" alt="">
 
-After inspecting main() we can confirm we're in the right place by inspecting its contents. First FUN_00101628() prints the banner that is displayed when running the executable, next you see the prompt the user is shown to enter input, as well as a check to see if "data.dat" exists on the system already. After that FUN_001015Dc() is ran which was determined to be the function that checks the length of the user input.  
+After inspecting main() we can confirm we're in the right place by inspecting its contents. First FUN_00101628() prints the banner that is displayed when running the executable, next you see the prompt the user is shown to enter input, as well as a check to see if "data.dat" exists on the system already. After that FUN_001015Dc() is ran which was determined to be the function that checks the length of the user input.
+  
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_277.png" alt="">
 
 With the info we have so far I have cleaned up variable/function names to make it easier to proceed
+
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_278.png" alt="">
 
 As we can see from the screenshot above, once the input_length check has succeeded (input was 27 chracters) we reach the next two functions which we can assume is where the actual input manipulation happens. First we see FUN_0010131d(user_input) - stepping into this function you will see that the function loops through each character in the input string and passes it to a function I renamed "temp_file_write()". 
@@ -57,7 +63,9 @@ For every index value divisible by 6, run 6 iterations of index - 1 (loop backwa
 [0,1,2,3,4,5,6,7,8,9,10,11] -> the condition ```if ((index_original !=0) && (index_original % 6 == 0) ``` would first hit on "5" or list[6] as the index is not 0 and divisible by 6. The function file_completion_2() would be ran on list[6],list[5],list[4]... down to list[0]. The second hit would be on "11" or list[12] and the same would happen: file_completion_2() ran for 6 iterations on list[12] through list[7]
 
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_282.png" alt="">
+
 What file_completion_2() does is essentially 2^index power - if the index passed is 6 it will multiply 2, 6 times. That result is returned and multiplied by the value from our binary_list (either a 0 or 1). 
+
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_281.png" alt="">
 
 When I first encountered this challenge, this part threw me off. Continuing to try and write what I understand so far step by step, even if I don't see the end picture yet helps. So far our updated encoding steps are: 
@@ -70,9 +78,11 @@ When I first encountered this challenge, this part threw me off. Continuing to t
 
 Now even though the result_number to pass can't be obtained by us without knowing the correct value of the reversed binary no., we have enough to potentially work backwards. The function print_enc_input() is the last part of the program. This function is simple as it will simply take the result_number and move <result_number> of positions away from the starting char "R" in the string:
 "RSTUWYZ0123456789ABCDEFGHIJKLMNOPqrstuvwxyz"
+
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/Selection_283.png" alt="">
 
 ---
+
 Okay, we have reached the end of the encoding algorithm and have our final steps:
 1. Input must be 27 characters long
 2. Take each character and convert it to it's binary no. (27chars * 8 = 217 total)
