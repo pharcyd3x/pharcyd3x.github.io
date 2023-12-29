@@ -1,5 +1,5 @@
 ---
-layout: post
+tags: [posts]
 title: "HTB Reversing Callenge - Encryption Bot"
 ---
 
