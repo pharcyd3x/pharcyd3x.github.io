@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "neon"
 
 # Site Settings
 locale                   : "en-US"
-title                    : "[blog_pharcyd3x]"
+title                    : "[pharcyd3x_blog]"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "home."
@@ -110,9 +110,6 @@ author:
   location         : "NYC"
   email            :
   links:
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://pharcyd3x.github.io"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/pharcyd3x"
